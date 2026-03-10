@@ -1,8 +1,10 @@
 package edu.touro.las.mcon364.test;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -64,6 +66,7 @@ public class FunctionalWarmup {
             for (String string : s.split("\\s+")) {
                 ctr ++;
             }
+
             return ctr;
         };
         return trim.andThen(counter);
@@ -81,7 +84,8 @@ public class FunctionalWarmup {
      * ["  math ", "", " java", "  "] -> ["MATH", "JAVA"]
      */
     public static List<String> cleanLabels(List<String> labels) {
-        Function<List<String>, List<String>> func = lst-> lst.stream().filter(x-> !x.isBlank()).toList();
+        Function<List<String>, List<String>> func =
+                lst-> lst.stream().filter(x-> !x.isBlank()).map(String::toUpperCase).toList();
         return func.apply(labels);
     }
 }
