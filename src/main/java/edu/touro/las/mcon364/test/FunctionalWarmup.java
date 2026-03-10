@@ -85,7 +85,7 @@ public class FunctionalWarmup {
      */
     public static List<String> cleanLabels(List<String> labels) {
         Function<List<String>, List<String>> func =
-                lst-> lst.stream().filter(x-> !x.isBlank()).map(String::toUpperCase).toList();
+                lst-> lst.stream().filter(x-> !x.isBlank()).map(String::toUpperCase).map(String::trim).toList();
         return func.apply(labels);
     }
 }
