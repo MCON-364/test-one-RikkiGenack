@@ -129,7 +129,8 @@ public class StudyTracker {
     public boolean undoLastChange() {
         Predicate<Deque<UndoStep>> undoTest = deq -> !deq.isEmpty();
         if (undoTest.test(undoStack)) {
-            undoStack.pollLast().undo();
+            UndoStep lastStep = undoStack.pop();
+            lastStep.undo();
             return true;
         }
         return false;

@@ -81,16 +81,7 @@ public class FunctionalWarmup {
      * ["  math ", "", " java", "  "] -> ["MATH", "JAVA"]
      */
     public static List<String> cleanLabels(List<String> labels) {
-        Function<List<String>, List<String>> func = lst->{
-            List<String> updated =  new ArrayList<>();
-            for(String label : lst){
-                if (!label.isBlank()){
-                    updated.add(label.trim().toUpperCase());
-                }
-            }
-            return updated;
-        };
-
+        Function<List<String>, List<String>> func = lst-> lst.stream().filter(x-> !x.isBlank()).toList();
         return func.apply(labels);
     }
 }
