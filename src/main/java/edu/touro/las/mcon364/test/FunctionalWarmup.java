@@ -59,7 +59,7 @@ public class FunctionalWarmup {
             if (s.isBlank()){
                 return 0;
             }
-            int ctr = 1;
+            int ctr = 0;
             // I know this isn't the most efficient way of doing it but I forgot how to make it into an array
             for (String string : s.split("\\s+")) {
                 ctr ++;
