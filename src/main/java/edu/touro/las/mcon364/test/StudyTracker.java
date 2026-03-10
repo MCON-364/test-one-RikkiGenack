@@ -1,6 +1,9 @@
 package edu.touro.las.mcon364.test;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class StudyTracker {
 
@@ -10,7 +13,8 @@ public class StudyTracker {
     public Optional<List<Integer>> scoresFor(String name) {
         return Optional.ofNullable(scoresByLearner.get(name));
     }
-
+    // I added this here so I can use it in all my methods:
+    private Predicate<String> exists = student-> learnerNames().contains(student);
     public Set<String> learnerNames() {
         return scoresByLearner.keySet();
     }
@@ -25,7 +29,13 @@ public class StudyTracker {
      * Throw IllegalArgumentException if name is null or blank.
      */
     public boolean addLearner(String name) {
-        throw new UnsupportedOperationException();
+
+        Consumer<String> func = student-> scoresByLearner.put(name, new ArrayList<>());
+        if (exists.test(name)){
+            return false;
+        }
+        func.accept(name);
+        return true;
     }
 
     /**
@@ -42,7 +52,15 @@ public class StudyTracker {
      * This operation should be undoable.
      */
     public boolean addScore(String name, int score) {
-        throw new UnsupportedOperationException();
+
+        if(score<0 || score>100) {
+            throw new IllegalArgumentException("Invalid Score");
+        }
+        if(exists.test(name)) {
+            scoresByLearner.get(name).add(score);
+            return exists.test(name);
+        }
+        return exists.test(name);
     }
 
     /**
@@ -54,7 +72,14 @@ public class StudyTracker {
      * - the learner has no scores
      */
     public Optional<Double> averageFor(String name) {
-        throw new UnsupportedOperationException();
+        Optional<Double> avg =  Optional.empty();
+        // if learner exists and has scores:
+        if (exists.test(name) && !scoresByLearner.get(name).isEmpty()){
+            int numGrades = scoresByLearner.get(name).size();
+            double sumGrades = scoresByLearner.get(name).stream().reduce(0,Integer::sum);
+            avg = Optional.of(sumGrades / numGrades);
+        }
+        return avg;
     }
 
     /**
@@ -70,7 +95,28 @@ public class StudyTracker {
      * Return Optional.empty() when no average exists.
      */
     public Optional<String> letterBandFor(String name) {
-        throw new UnsupportedOperationException();
+        Optional<String> letterBand = Optional.empty();
+
+        if (exists.test(name) && averageFor(name).isPresent()){
+            Double avg = averageFor(name).get();
+            String grade = switch (avg){
+                case Double d when d >= 90->{
+                    yield "A";
+                }
+                case Double d when d >= 80 && d < 90 -> {
+                    yield "B";
+                }
+                case Double d when d >=70 && d<80 ->{
+                    yield "C";
+                }
+                case  Double d when d >= 60 && d < 70 ->{
+                    yield "D";
+                }
+                default -> "F";
+            };
+            letterBand = Optional.of(grade);
+        }
+        return letterBand;
     }
 
     /**
@@ -81,8 +127,12 @@ public class StudyTracker {
      * Return false if there is nothing to undo.
      */
     public boolean undoLastChange() {
-        throw new UnsupportedOperationException();
+        Predicate<Deque<UndoStep>> undoTest = deq -> !deq.isEmpty();
+        if (undoTest.test(undoStack)) {
+            undoStack.pollLast().undo();
+            return true;
+        }
+        return false;
     }
-
 
 }
