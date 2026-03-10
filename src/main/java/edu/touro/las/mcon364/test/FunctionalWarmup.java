@@ -1,7 +1,10 @@
 package edu.touro.las.mcon364.test;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -13,7 +16,9 @@ public class FunctionalWarmup {
      * Return a Supplier that gives the current month number (1-12).
      */
     public static Supplier<Integer> currentMonthSupplier() {
-        throw new UnsupportedOperationException();
+
+        Supplier<Integer> sup = () -> LocalDate.now().getMonthValue();
+        return sup;
     }
 
     /**
@@ -22,7 +27,8 @@ public class FunctionalWarmup {
      * has more than 5 characters.
      */
     public static Predicate<String> longerThanFive() {
-        throw new UnsupportedOperationException();
+        Predicate<String> predicate = s -> s.length() >5;
+        return predicate;
     }
 
     /**
@@ -34,7 +40,8 @@ public class FunctionalWarmup {
      * Prefer chaining smaller predicates.
      */
     public static Predicate<Integer> positiveAndEven() {
-        throw new UnsupportedOperationException();
+        Predicate<Integer> pred = i -> i% 2==0 && i> 0;
+        return pred;
     }
 
     /**
@@ -48,7 +55,21 @@ public class FunctionalWarmup {
      *
      */
     public static Function<String, Integer> wordCounter() {
-        throw new UnsupportedOperationException();
+
+        Function<String, String> trim = s->s.trim();
+        Function<String, Integer> counter = s->{
+            if (s.isBlank()){
+                return 0;
+            }
+            int ctr = 0;
+            // I know this isn't the most efficient way of doing it but I forgot how to make it into an array
+            for (String string : s.split("\\s+")) {
+                ctr ++;
+            }
+
+            return ctr;
+        };
+        return trim.andThen(counter);
     }
 
     /**
@@ -63,6 +84,8 @@ public class FunctionalWarmup {
      * ["  math ", "", " java", "  "] -> ["MATH", "JAVA"]
      */
     public static List<String> cleanLabels(List<String> labels) {
-        throw new UnsupportedOperationException();
+        Function<List<String>, List<String>> func =
+                lst-> lst.stream().filter(x-> !x.isBlank()).map(String::toUpperCase).map(String::trim).toList();
+        return func.apply(labels);
     }
 }
